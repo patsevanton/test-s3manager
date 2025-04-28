@@ -15,7 +15,7 @@ spec:
       serviceAccountName: s3manager
       containers:
         - name: s3manager
-          image: example.com/dockerhub/cloudlena/s3manager:v0.5.0
+          image: cloudlena/s3manager:v0.5.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
