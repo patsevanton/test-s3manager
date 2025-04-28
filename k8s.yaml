@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s3manager
+  template:
+    metadata:
+      labels:
+        app: s3manager
+    spec:
+      serviceAccountName: s3manager
+      containers:
+        - name: s3manager
+          image: example.com/dockerhub/cloudlena/s3manager:v0.5.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: "ENDPOINT"
+              value: "storage.yandexcloud.net"
+            - name: "SKIP_SSL_VERIFICATION"
+              value: "true"
+            - name: "ACCESS_KEY_ID"
+              value: "ACCESS_KEY_ID"
+            - name: "SECRET_ACCESS_KEY"
+              value: "SECRET_ACCESS_KEY"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3manager
+spec:
+  selector:
+    app: s3manager
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: s3manager
+spec:
+  rules:
+    - host: s3manager.apatsev.org.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: s3manager
+                port:
+                  number: 80
