@@ -23,3 +23,20 @@ resource "yandex_storage_bucket" "test" {
   secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
   bucket     = "tf-test-bucket-for-s3manager"
 }
+
+output "static_access_keys" {
+  value = {
+    access_key = yandex_iam_service_account_static_access_key.sa-static-key.access_key
+    secret_key = yandex_iam_service_account_static_access_key.sa-static-key.secret_key
+    # Предупреждение: Секретный ключ должен защищаться и не выводиться в логах в production
+  }
+  sensitive   = true
+  description = "Static access keys for the service account (marked as sensitive)"
+}
+
+output "bucket_info" {
+  value = {
+    bucket_name = yandex_storage_bucket.test.bucket
+  }
+  description = "Information about the created S3 bucket"
+}
